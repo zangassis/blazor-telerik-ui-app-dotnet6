@@ -1,0 +1,48 @@
+﻿@page "/CreateProduct"
+@using ProductCatalog.Data
+@using ProductCatalog.Services
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@inject ProductService productService
+@inject NavigationManager NavigationManager
+
+<div class="form-section">
+    <TelerikForm Model="@Product">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                    <FormItem Field="@nameof(ProductDto.Displayname)"></FormItem>
+                    <FormItem Field="@nameof(ProductDto.Brand)"></FormItem>
+                    <FormItem Field="@nameof(ProductDto.Price)"></FormItem>
+                    <FormItem Field="@nameof(ProductDto.Category)"></FormItem>
+            </FormItems>
+            <FormButtons>
+                    <TelerikButton ButtonType="ButtonType.Button" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@CreateNewProduct">Save</TelerikButton>
+                    <TelerikButton ButtonType="ButtonType.Button" OnClick="@Cancel">Cancel</TelerikButton>
+            </FormButtons>
+    </TelerikForm>
+</div>
+
+@code {
+    ProductDto Product = new ProductDto();
+
+    protected void CreateNewProduct()
+    {
+        productService.CreateProduct(Product);
+        NavigationManager.NavigateTo("Product");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Product");
+    }
+}
+
+<style>
+    .form-section {
+        margin: 0 auto;
+        padding: 3em;
+        border: 1px solid rgba(20,53,80,0.14);
+        box-shadow: 0 1px 2px 1px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 8%);
+    }
+</style>
