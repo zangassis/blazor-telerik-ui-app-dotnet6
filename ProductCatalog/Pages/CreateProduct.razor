@@ -1,4 +1,4 @@
-﻿@page "/CreateProduct"
+@page "/CreateProduct"
 @using ProductCatalog.Data
 @using ProductCatalog.Services
 @using Telerik.Blazor
@@ -6,35 +6,52 @@
 @inject ProductService productService
 @inject NavigationManager NavigationManager
 
+@page "/form/overview"
+
 <div class="form-section">
-    <TelerikForm Model="@Product">
+    @if (ValidSubmit)
+    {
+        <div class="success-alert">
+            <p>The form was submitted successfully.</p>
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@ProductEntity"
+                 OnValidSubmit="@HandleValidSubmit"
+                 OnInvalidSubmit="@HandleInvalidSubmit">
             <FormValidation>
                 <DataAnnotationsValidator></DataAnnotationsValidator>
             </FormValidation>
             <FormItems>
-                    <FormItem Field="@nameof(ProductDto.Displayname)"></FormItem>
-                    <FormItem Field="@nameof(ProductDto.Brand)"></FormItem>
-                    <FormItem Field="@nameof(ProductDto.Price)"></FormItem>
-                    <FormItem Field="@nameof(ProductDto.Category)"></FormItem>
+                <FormItem Field="@nameof(ProductDto.Displayname)"></FormItem>
+                <FormItem Field="@nameof(ProductDto.Brand)"></FormItem>
+                <FormItem Field="@nameof(ProductDto.Price)"></FormItem>
+                <FormItem Field="@nameof(ProductDto.Category)"></FormItem>
             </FormItems>
-            <FormButtons>
-                    <TelerikButton ButtonType="ButtonType.Button" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@CreateNewProduct">Save</TelerikButton>
-                    <TelerikButton ButtonType="ButtonType.Button" OnClick="@Cancel">Cancel</TelerikButton>
-            </FormButtons>
-    </TelerikForm>
+        </TelerikForm>
+    }
 </div>
 
 @code {
-    ProductDto Product = new ProductDto();
+    public bool ValidSubmit { get; set; } = false;
+    public ProductDto ProductEntity = new ProductDto();
 
-    protected void CreateNewProduct()
+    protected async void HandleValidSubmit()
     {
-        productService.CreateProduct(Product);
-        NavigationManager.NavigateTo("Product");
+        ValidSubmit = true;
+
+        productService.CreateProduct(ProductEntity);
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
     }
-    void Cancel()
+
+    void HandleInvalidSubmit()
     {
-        NavigationManager.NavigateTo("Product");
+        ValidSubmit = false;
     }
 }
 
@@ -44,5 +61,11 @@
         padding: 3em;
         border: 1px solid rgba(20,53,80,0.14);
         box-shadow: 0 1px 2px 1px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 8%);
+    }
+    .success-alert {
+      padding: 20px;
+      background-color: green;
+      color: white;
+      margin-bottom: 15px;
     }
 </style>
